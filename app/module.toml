@@ -44,13 +44,13 @@ java = ["src/test/java", "src/test/kotlin"]
 resources = ["src/test/resources"]
 
 [dependencies]
-implementation = ["kotlin-stdlib", "androidx.activity:activity-compose:1.13.0", "androidx.compose.ui:ui:1.11.2", "androidx.compose.foundation:foundation:1.11.2", "androidx.compose.material3:material3:1.4.0", "androidx.compose.ui:ui-tooling-preview:1.11.2"]
+implementation = ["kotlin-stdlib", "androidx.activity:activity-compose:1.13.0", "androidx.compose.ui:ui:1.11.2", "androidx.compose.foundation:foundation:1.11.2", "androidx.compose.material3:material3:1.4.0", "androidx.compose.ui:ui-tooling-preview:1.11.2", "dev.rikka.shizuku:api:13.1.5", "dev.rikka.shizuku:provider:13.1.5"]
 
 [android]
 namespace = "com.example.backgroundkiller"
-compileSdk = 36
-minSdk = 23
-targetSdk = 36
+compileSdk = 34
+minSdk = 24
+targetSdk = 34
 manifest = "src/main/AndroidManifest.xml"
 versionCode = 1
 versionName = "1.0"

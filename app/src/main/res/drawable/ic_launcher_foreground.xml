@@ -1,10 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
-    android:width="108dp" android:height="108dp"
-    android:viewportWidth="108" android:viewportHeight="108">
-    <path android:strokeColor="#FFFFFF" android:strokeWidth="2" android:strokeLineCap="round" android:pathData="M45,45L40,37"/>
-    <path android:strokeColor="#FFFFFF" android:strokeWidth="2" android:strokeLineCap="round" android:pathData="M63,45L68,37"/>
-    <path android:fillColor="#FFFFFF" android:pathData="M38,72L38,58A16,16 0 0 1 70,58L70,72Z"/>
-    <path android:fillColor="@color/ic_launcher_background" android:pathData="M45,54a2,2 0 1 0 4,0a2,2 0 1 0 -4,0"/>
-    <path android:fillColor="@color/ic_launcher_background" android:pathData="M59,54a2,2 0 1 0 4,0a2,2 0 1 0 -4,0"/>
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <group android:scaleX="0.5"
+        android:scaleY="0.5"
+        android:translateX="27"
+        android:translateY="27">
+        <!-- Neon Green Target/Kill Icon -->
+        <path
+            android:fillColor="#39FF14"
+            android:pathData="M54,10 C29.7,10 10,29.7 10,54 C10,78.3 29.7,98 54,98 C78.3,98 98,78.3 98,54 C98,29.7 78.3,10 54,10 Z M54,86 C36.3,86 22,71.7 22,54 C22,36.3 36.3,22 54,22 C71.7,22 86,36.3 86,54 C86,71.7 71.7,86 54,86 Z" />
+        <path
+            android:fillColor="#00FFFF"
+            android:pathData="M54,38 C45.2,38 38,45.2 38,54 C38,62.8 45.2,70 54,70 C62.8,70 70,62.8 70,54 C70,45.2 62.8,38 54,38 Z" />
+        <path
+            android:fillColor="#FF3131"
+            android:pathData="M50,54 L58,54 L58,62 L50,62 Z M46,54 L54,54 L54,50 L46,50 Z" />
+    </group>
 </vector>
