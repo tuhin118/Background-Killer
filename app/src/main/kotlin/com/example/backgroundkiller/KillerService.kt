@@ -50,24 +50,19 @@ class KillerService : Service() {
                     val whitelist: Set<String> = sharedPref.getStringSet("whitelist", HashSet<String>()) ?: HashSet()
 
                     val runningApps = getThirdPartyPackages()
-                    var killedCount = 0
-
+                    
                     for (pkg in runningApps) {
                         if (pkg != MY_PACKAGE_NAME && !whitelist.contains(pkg)) {
                             killApp(pkg)
-                            killedCount++
                         }
-                    }
-                    
-                    if (killedCount > 0) {
-                         // অপশনাল: চাইলে এখানে লগ দিতে পারেন যে কতগুলো অ্যাপ কিল হলো
                     }
 
                 } catch (e: Exception) {
                     Log.e("KillerService", "Error: ${e.message}")
                 }
 
-                delay(3000) // প্রতি ৩ সেকেন্ড পর পর
+                // টাইমার ৩০ সেকেন্ড (30000 মিলিসেকেন্ড) করা হলো
+                delay(30000) 
             }
         }
     }

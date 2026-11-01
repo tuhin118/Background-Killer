@@ -52,12 +52,10 @@ fun MainApp() {
     var currentScreen by remember { mutableStateOf("main") }
     val context = LocalContext.current
 
-    // আপডেট চেক করার স্টেট
     var showUpdateDialog by remember { mutableStateOf(false) }
     var newVersion by remember { mutableStateOf("") }
     var downloadUrl by remember { mutableStateOf("") }
 
-    // অ্যাপ ওপেন হলে একবার আপডেট চেক করবে
     LaunchedEffect(Unit) {
         UpdateChecker.checkForUpdate(context) { version, url ->
             newVersion = version
@@ -66,42 +64,21 @@ fun MainApp() {
         }
     }
 
-    // আপডেট অ্যালার্ট ডায়ালগ
     if (showUpdateDialog) {
         AlertDialog(
             onDismissRequest = { showUpdateDialog = false },
-            title = {
-                Text(
-                    text = "🚀 New Update Available!",
-                    color = Color(0xFF39FF14),
-                    fontFamily = FontFamily.Monospace,
-                    fontWeight = FontWeight.Bold
-                )
-            },
-            text = {
-                Text(
-                    text = "Version $newVersion is now available on GitHub. Please update to get the latest features.",
-                    color = Color.White,
-                    fontFamily = FontFamily.Monospace,
-                    fontSize = 14.sp
-                )
-            },
+            title = { Text(text = "🚀 New Update Available!", color = Color(0xFF39FF14), fontFamily = FontFamily.Monospace, fontWeight = FontWeight.Bold) },
+            text = { Text(text = "Version $newVersion is now available on GitHub. Please update to get the latest features.", color = Color.White, fontFamily = FontFamily.Monospace, fontSize = 14.sp) },
             confirmButton = {
-                Button(
-                    onClick = {
-                        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(downloadUrl))
-                        context.startActivity(intent)
-                        showUpdateDialog = false
-                    },
-                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF39FF14))
-                ) {
+                Button(onClick = {
+                    context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(downloadUrl)))
+                    showUpdateDialog = false
+                }, colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF39FF14))) {
                     Text("UPDATE NOW", color = Color.Black, fontWeight = FontWeight.Bold)
                 }
             },
             dismissButton = {
-                TextButton(onClick = { showUpdateDialog = false }) {
-                    Text("LATER", color = Color.Gray)
-                }
+                TextButton(onClick = { showUpdateDialog = false }) { Text("LATER", color = Color.Gray) }
             },
             containerColor = Color(0xFF151515)
         )
@@ -111,26 +88,24 @@ fun MainApp() {
         "main" -> MainTerminalScreen(
             onNavigateToSelector = { currentScreen = "selector" },
             onNavigateToCrosshair = { 
-                if (Settings.canDrawOverlays(context)) {
-                    currentScreen = "crosshair" 
-                } else {
-                    val intent = Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:" + context.packageName))
-                    context.startActivity(intent)
-                }
-            }
+                if (Settings.canDrawOverlays(context)) currentScreen = "crosshair" 
+                else context.startActivity(Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:" + context.packageName)))
+            },
+            onNavigateToFps = { currentScreen = "fps" }
         )
         "selector" -> AppSelectorScreen(onBack = { currentScreen = "main" })
-        "crosshair" -> CrosshairSettingsScreen(
-            onBack = { currentScreen = "main" },
-            onNavigateToAimApps = { currentScreen = "aim_apps" }
-        )
+        "crosshair" -> CrosshairSettingsScreen(onBack = { currentScreen = "main" }, onNavigateToAimApps = { currentScreen = "aim_apps" })
         "aim_apps" -> AimAppSelectorScreen(onBack = { currentScreen = "crosshair" })
+        "fps" -> FpsBoostScreen(onBack = { currentScreen = "main" })
     }
 }
 
 @Composable
-fun MainTerminalScreen(onNavigateToSelector: () -> Unit, onNavigateToCrosshair: () -> Unit) {
-    // ... (এই ফাংশনের ভেতরের কোড আগের মতোই থাকবে, কোনো পরিবর্তন নেই)
+fun MainTerminalScreen(
+    onNavigateToSelector: () -> Unit, 
+    onNavigateToCrosshair: () -> Unit,
+    onNavigateToFps: () -> Unit
+) {
     val context = LocalContext.current
     val bgColor = Color(0xFF0A0A0A)
     val terminalBg = Color(0xFF111111)
@@ -140,20 +115,20 @@ fun MainTerminalScreen(onNavigateToSelector: () -> Unit, onNavigateToCrosshair: 
     val neonRed = Color(0xFFFF3131)
     val neonPurple = Color(0xFFBF00FF)
     val neonOrange = Color(0xFFFFA500)
+    val neonYellow = Color(0xFFFFFF00)
 
     var isConnected by remember { mutableStateOf(false) }
     val listState = rememberLazyListState()
 
     LaunchedEffect(LogManager.logs.size) {
-        if (LogManager.logs.isNotEmpty()) {
-            listState.animateScrollToItem(LogManager.logs.size - 1)
-        }
+        if (LogManager.logs.isNotEmpty()) listState.animateScrollToItem(LogManager.logs.size - 1)
     }
 
     Column(modifier = Modifier.fillMaxSize().background(bgColor).padding(12.dp)) {
         Text("BACKGROUND KILLER", color = neonGreen, fontFamily = FontFamily.Monospace, fontSize = 18.sp, fontWeight = FontWeight.Bold, modifier = Modifier.padding(top = 10.dp, bottom = 10.dp))
 
-        Row(modifier = Modifier.fillMaxWidth().padding(bottom = 12.dp), horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+        // রো ১ (শিজুকু, অ্যাপস, এইম)
+        Row(modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp), horizontalArrangement = Arrangement.spacedBy(4.dp)) {
             Button(onClick = {
                 if (Shizuku.isPreV11() || Shizuku.checkSelfPermission() == PackageManager.PERMISSION_GRANTED) {
                     isConnected = true
@@ -163,26 +138,33 @@ fun MainTerminalScreen(onNavigateToSelector: () -> Unit, onNavigateToCrosshair: 
                     Shizuku.requestPermission(1)
                 }
             }, colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent), shape = RoundedCornerShape(6.dp), modifier = Modifier.weight(1f).height(45.dp).border(1.dp, neonCyan, RoundedCornerShape(6.dp)).background(Color(0xFF001A1A), RoundedCornerShape(6.dp)), contentPadding = PaddingValues(0.dp)) {
-                Text("SHIZUKU", color = neonCyan, fontFamily = FontFamily.Monospace, fontSize = 9.sp)
+                Text("SHIZUKU", color = neonCyan, fontFamily = FontFamily.Monospace, fontSize = 10.sp)
             }
             Button(onClick = { onNavigateToSelector() }, colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent), shape = RoundedCornerShape(6.dp), modifier = Modifier.weight(1f).height(45.dp).border(1.dp, neonPurple, RoundedCornerShape(6.dp)).background(Color(0xFF1A001A), RoundedCornerShape(6.dp)), contentPadding = PaddingValues(0.dp)) {
-                Text("APPS", color = neonPurple, fontFamily = FontFamily.Monospace, fontSize = 9.sp)
+                Text("APPS", color = neonPurple, fontFamily = FontFamily.Monospace, fontSize = 10.sp)
             }
             Button(onClick = { onNavigateToCrosshair() }, colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent), shape = RoundedCornerShape(6.dp), modifier = Modifier.weight(1f).height(45.dp).border(1.dp, neonOrange, RoundedCornerShape(6.dp)).background(Color(0xFF1A0F00), RoundedCornerShape(6.dp)), contentPadding = PaddingValues(0.dp)) {
-                Text("AIM", color = neonOrange, fontFamily = FontFamily.Monospace, fontSize = 9.sp)
+                Text("AIM", color = neonOrange, fontFamily = FontFamily.Monospace, fontSize = 10.sp)
+            }
+        }
+
+        // রো ২ (এফপিএস, স্টার্ট, স্টপ)
+        Row(modifier = Modifier.fillMaxWidth().padding(bottom = 12.dp), horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+            Button(onClick = { onNavigateToFps() }, colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent), shape = RoundedCornerShape(6.dp), modifier = Modifier.weight(1f).height(45.dp).border(1.dp, neonYellow, RoundedCornerShape(6.dp)).background(Color(0xFF1A1A00), RoundedCornerShape(6.dp)), contentPadding = PaddingValues(0.dp)) {
+                Text("FPS BOOST", color = neonYellow, fontFamily = FontFamily.Monospace, fontSize = 10.sp)
             }
             Button(onClick = {
                 val serviceIntent = Intent(context, KillerService::class.java)
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) context.startForegroundService(serviceIntent) else context.startService(serviceIntent)
                 LogManager.addLog("> Initializing Boost Engine...")
             }, colors = ButtonDefaults.buttonColors(containerColor = neonGreen), shape = RoundedCornerShape(6.dp), modifier = Modifier.weight(1f).height(45.dp), contentPadding = PaddingValues(0.dp)) {
-                Text("START", color = Color.Black, fontFamily = FontFamily.Monospace, fontSize = 10.sp, fontWeight = FontWeight.Bold)
+                Text("START", color = Color.Black, fontFamily = FontFamily.Monospace, fontSize = 12.sp, fontWeight = FontWeight.Bold)
             }
             Button(onClick = {
                 context.stopService(Intent(context, KillerService::class.java))
                 LogManager.addLog("> Terminating Boost Engine.")
             }, colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent), shape = RoundedCornerShape(6.dp), modifier = Modifier.weight(1f).height(45.dp).border(1.dp, neonRed, RoundedCornerShape(6.dp)).background(Color(0xFF1A0000), RoundedCornerShape(6.dp)), contentPadding = PaddingValues(0.dp)) {
-                Text("STOP", color = neonRed, fontFamily = FontFamily.Monospace, fontSize = 9.sp)
+                Text("STOP", color = neonRed, fontFamily = FontFamily.Monospace, fontSize = 12.sp)
             }
         }
 

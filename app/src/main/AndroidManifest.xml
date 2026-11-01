@@ -9,7 +9,7 @@
     <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
-    <uses-permission android:name="android.permission.INTERNET" /> <!-- নতুন পারমিশন -->
+    <uses-permission android:name="android.permission.INTERNET" />
     
     <uses-permission android:name="android.permission.PACKAGE_USAGE_STATS" tools:ignore="ProtectedPermissions" />
 
@@ -47,5 +47,15 @@
 
         <service android:name=".KillerService" android:exported="false" android:foregroundServiceType="specialUse" />
         <service android:name=".CrosshairService" android:exported="false" />
+        
+        <!-- নতুন VPN সার্ভিস -->
+        <service
+            android:name=".AppControlVpnService"
+            android:permission="android.permission.BIND_VPN_SERVICE"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="android.net.VpnService" />
+            </intent-filter>
+        </service>
     </application>
 </manifest>
