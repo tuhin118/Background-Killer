@@ -16,9 +16,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Text
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -54,6 +52,61 @@ fun MainApp() {
     var currentScreen by remember { mutableStateOf("main") }
     val context = LocalContext.current
 
+    // আপডেট চেক করার স্টেট
+    var showUpdateDialog by remember { mutableStateOf(false) }
+    var newVersion by remember { mutableStateOf("") }
+    var downloadUrl by remember { mutableStateOf("") }
+
+    // অ্যাপ ওপেন হলে একবার আপডেট চেক করবে
+    LaunchedEffect(Unit) {
+        UpdateChecker.checkForUpdate(context) { version, url ->
+            newVersion = version
+            downloadUrl = url
+            showUpdateDialog = true
+        }
+    }
+
+    // আপডেট অ্যালার্ট ডায়ালগ
+    if (showUpdateDialog) {
+        AlertDialog(
+            onDismissRequest = { showUpdateDialog = false },
+            title = {
+                Text(
+                    text = "🚀 New Update Available!",
+                    color = Color(0xFF39FF14),
+                    fontFamily = FontFamily.Monospace,
+                    fontWeight = FontWeight.Bold
+                )
+            },
+            text = {
+                Text(
+                    text = "Version $newVersion is now available on GitHub. Please update to get the latest features.",
+                    color = Color.White,
+                    fontFamily = FontFamily.Monospace,
+                    fontSize = 14.sp
+                )
+            },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(downloadUrl))
+                        context.startActivity(intent)
+                        showUpdateDialog = false
+                    },
+                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF39FF14))
+                ) {
+                    Text("UPDATE NOW", color = Color.Black, fontWeight = FontWeight.Bold)
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showUpdateDialog = false }) {
+                    Text("LATER", color = Color.Gray)
+                }
+            },
+            containerColor = Color(0xFF151515)
+        )
+    }
+
     when (currentScreen) {
         "main" -> MainTerminalScreen(
             onNavigateToSelector = { currentScreen = "selector" },
@@ -69,7 +122,7 @@ fun MainApp() {
         "selector" -> AppSelectorScreen(onBack = { currentScreen = "main" })
         "crosshair" -> CrosshairSettingsScreen(
             onBack = { currentScreen = "main" },
-            onNavigateToAimApps = { currentScreen = "aim_apps" } // নতুন স্ক্রিনে যাওয়ার রাস্তা
+            onNavigateToAimApps = { currentScreen = "aim_apps" }
         )
         "aim_apps" -> AimAppSelectorScreen(onBack = { currentScreen = "crosshair" })
     }
@@ -77,6 +130,7 @@ fun MainApp() {
 
 @Composable
 fun MainTerminalScreen(onNavigateToSelector: () -> Unit, onNavigateToCrosshair: () -> Unit) {
+    // ... (এই ফাংশনের ভেতরের কোড আগের মতোই থাকবে, কোনো পরিবর্তন নেই)
     val context = LocalContext.current
     val bgColor = Color(0xFF0A0A0A)
     val terminalBg = Color(0xFF111111)
