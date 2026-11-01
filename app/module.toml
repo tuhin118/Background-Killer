@@ -1,4 +1,4 @@
-version = 2
+version = 3
 
 [module]
 type = "android-app"
@@ -52,8 +52,8 @@ compileSdk = 34
 minSdk = 24
 targetSdk = 34
 manifest = "src/main/AndroidManifest.xml"
-versionCode = 2
-versionName = "1.1.0"
+versionCode = 3
+versionName = "1.2.0"
 isApplication = true
 manifestPlaceholders = []
 buildConfigFields = []
