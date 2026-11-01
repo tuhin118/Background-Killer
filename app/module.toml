@@ -1,4 +1,4 @@
-version = 3
+version = 2
 
 [module]
 type = "android-app"
