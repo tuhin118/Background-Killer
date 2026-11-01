@@ -9,6 +9,7 @@
 [![Developer](https://img.shields.io/badge/Developer-tuhin118-orange.svg?style=for-the-badge&logo=github)](https://github.com/tuhin118)
 
 **Background Killer** is a powerful, lightweight app designed specifically for low-end and mid-range Android devices. It aggressively kills background apps to free up RAM and CPU, ensuring your games run at maximum FPS without lag. It also features a highly customizable Crosshair Overlay (Aim System) for precise shooting in games like PUBG and Free Fire.
+FPS booster added.
 
 </div>
 
